@@ -30,14 +30,23 @@ export default function AIChatbot() {
 
     const [inputValue, setInputValue] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll on new message
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Direct container auto-scroll on new message / streaming chunks
+    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior,
+            });
+        }
     };
 
     useEffect(() => {
-        scrollToBottom();
+        if (messagesContainerRef.current) {
+            // Instant scroll during active streaming, smooth otherwise
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
     }, [messages, isLoading]);
 
     const handleSendMessage = async (text: string) => {
@@ -182,20 +191,23 @@ export default function AIChatbot() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 50 }}
                     transition={{ type: "spring", duration: 0.5 }}
+                    data-lenis-prevent="true"
                     className="
                         fixed
                         bottom-20
                         right-6
                         z-50
                         flex
-                        h-[460px]
-                        w-[320px]
+                        h-[480px]
+                        max-h-[82vh]
+                        w-[340px]
+                        sm:w-[360px]
                         flex-col
                         overflow-hidden
                         rounded-[24px]
                         border
                         border-cyan-400/20
-                        bg-black/80
+                        bg-black/90
                         shadow-[0_0_30px_rgba(34,211,238,0.15)]
                         backdrop-blur-2xl
                         max-w-[calc(100vw-32px)]
@@ -205,6 +217,7 @@ export default function AIChatbot() {
                     <div
                         className="
                             flex
+                            shrink-0
                             items-center
                             justify-between
                             border-b
@@ -225,29 +238,67 @@ export default function AIChatbot() {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={closeChat}
-                            className="
-                                flex
-                                h-8
-                                w-8
-                                items-center
-                                justify-center
-                                rounded-full
-                                border
-                                border-white/10
-                                text-white/60
-                                transition-all
-                                hover:bg-white/5
-                                hover:text-white
-                            "
-                        >
-                            <X size={16} />
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                            {messages.length > 0 && (
+                                <button
+                                    onClick={clearMessages}
+                                    title="Clear conversation"
+                                    className="
+                                        flex
+                                        h-8
+                                        w-8
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        border
+                                        border-white/10
+                                        text-white/60
+                                        transition-all
+                                        hover:bg-white/5
+                                        hover:text-cyan-400
+                                    "
+                                >
+                                    <RefreshCw size={13} />
+                                </button>
+                            )}
+                            <button
+                                onClick={closeChat}
+                                className="
+                                    flex
+                                    h-8
+                                    w-8
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    border
+                                    border-white/10
+                                    text-white/60
+                                    transition-all
+                                    hover:bg-white/5
+                                    hover:text-white
+                                "
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Messages List */}
-                    <div className="flex-grow overflow-y-auto p-6 space-y-4">
+                    <div 
+                        ref={messagesContainerRef}
+                        data-lenis-prevent="true"
+                        className="
+                            flex-1
+                            min-h-0
+                            overflow-y-auto
+                            overscroll-contain
+                            touch-pan-y
+                            p-6
+                            space-y-4
+                            [scrollbar-width:thin]
+                            [scrollbar-color:rgba(34,211,238,0.25)_transparent]
+                        "
+                    >
                         {messages.length === 0 ? (
                             <div className="flex h-full flex-col items-center justify-center text-center space-y-4">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/5 border border-cyan-500/10 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.05)]">
@@ -333,6 +384,7 @@ export default function AIChatbot() {
                         }}
                         className="
                             flex
+                            shrink-0
                             gap-2
                             border-t
                             border-white/10

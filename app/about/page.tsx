@@ -1,7 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, Github, Instagram, Linkedin, Star, Twitter } from "lucide-react";
+import { 
+    ArrowLeft, 
+    ArrowUpRight, 
+    Github, 
+    Instagram, 
+    Linkedin, 
+    Star, 
+    Twitter, 
+    Play, 
+    Film, 
+    Image as ImageIcon, 
+    Maximize2, 
+    ChevronLeft, 
+    ChevronRight, 
+    X,
+    Sparkles
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -22,9 +38,60 @@ export default function AboutPage() {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
+    // Dynamic Perspective Gallery State
+    const [mediaItems, setMediaItems] = useState<{ src: string; name: string; title: string; type: "image" | "video" }[]>([]);
+    const [loadingMedia, setLoadingMedia] = useState(true);
+    const [activeFilter, setActiveFilter] = useState<"all" | "image" | "video">("all");
+    const [visibleCount, setVisibleCount] = useState(24);
+    const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
     useEffect(() => {
         setMounted(true);
+
+        // Fetch all dynamic images and videos from /api/perspective
+        fetch("/api/perspective")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success && Array.isArray(data.items) && data.items.length > 0) {
+                    setMediaItems(data.items);
+                } else {
+                    // Fallback to static manifest
+                    fetch("/about_me_imges/perspective_manifest.json")
+                        .then((r) => r.json())
+                        .then((manifest) => setMediaItems(manifest))
+                        .catch(() => {});
+                }
+            })
+            .catch(() => {
+                // Fallback to static manifest
+                fetch("/about_me_imges/perspective_manifest.json")
+                    .then((r) => r.json())
+                    .then((manifest) => setMediaItems(manifest))
+                    .catch(() => {});
+            })
+            .finally(() => setLoadingMedia(false));
     }, []);
+
+    // Filter media
+    const filteredMedia = mediaItems.filter((item) => {
+        if (activeFilter === "all") return true;
+        return item.type === activeFilter;
+    });
+
+    const displayedMedia = filteredMedia.slice(0, visibleCount);
+
+    const photosCount = mediaItems.filter((m) => m.type === "image").length;
+    const videosCount = mediaItems.filter((m) => m.type === "video").length;
+
+    useEffect(() => {
+        // Trigger window resize so Lenis immediately recalculates total scroll height
+        if (typeof window !== "undefined") {
+            const timer = setTimeout(() => {
+                window.dispatchEvent(new Event("resize"));
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [visibleCount, mediaItems, activeFilter]);
 
     if (!mounted) {
         return <main className="min-h-screen bg-background relative font-sans select-none" />;
@@ -228,81 +295,227 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* TESTIMONIALS SECTION */}
-            <section className="relative z-10 max-w-[1650px] mx-auto px-8 md:px-20 lg:px-28 py-20 border-t border-zinc-200 dark:border-white/5">
-                <h3 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-snug mb-12 max-w-xl">
-                    Hear it from the people who totally didn't get paid to say this.
-                </h3>
 
-                <div className="grid gap-10 md:grid-cols-2">
-                    {/* TESTIMONIAL 1 */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                            <Star className="text-foreground fill-foreground" size={16} />
-                            <span className="font-semibold text-sm text-foreground">Product sense</span>
+
+            {/* MY PERSPECTIVE / DYNAMIC GALLERY SECTION */}
+            <section className="relative z-10 max-w-[1650px] mx-auto px-8 md:px-20 lg:px-28 py-20 border-t border-zinc-200 dark:border-white/5">
+                {/* Header & Filter Bar */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                    <div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-3">
+                            <Sparkles size={12} />
+                            Visual Journey & Moments
                         </div>
-                        <p className="text-base md:text-lg text-zinc-600 dark:text-gray-400 leading-relaxed font-light">
-                            "Ranjith is one of the most talented engineers I've worked with. He has a superb product sense and clarity of thought in terms of design. I've worked with him on multiple projects and can surely vouch for his skills in terms of UI and UX."
-                        </p>
-                        <div className="flex items-center gap-3 pt-2">
-                            <div className="h-8 w-8 rounded-full bg-cyan-500/20 border border-cyan-400/20 flex items-center justify-center text-[10px] font-bold text-cyan-400">
-                                MJ
-                            </div>
-                            <div>
-                                <h5 className="text-xs font-semibold text-foreground">Mahek Jain</h5>
-                                <p className="text-[10px] text-gray-500">Product Manager</p>
-                            </div>
-                        </div>
+                        <h3 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+                            My Perspective
+                        </h3>
                     </div>
 
-                    {/* TESTIMONIAL 2 */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                            <Star className="text-foreground fill-foreground" size={16} />
-                            <span className="font-semibold text-sm text-foreground">On time</span>
-                        </div>
-                        <p className="text-base md:text-lg text-zinc-600 dark:text-gray-400 leading-relaxed font-light">
-                            "We hired Ranjith for the full UI/UX and frontend engineering of our travel platform. He did a great job, and really put his mark on our brand. He is fun to work with, always communicates clearly, and delivers what he promises on time."
-                        </p>
-                        <div className="flex items-center gap-3 pt-2">
-                            <div className="h-8 w-8 rounded-full bg-purple-500/20 border border-purple-400/20 flex items-center justify-center text-[10px] font-bold text-purple-400">
-                                JV
-                            </div>
-                            <div>
-                                <h5 className="text-xs font-semibold text-foreground">Joris Vanherp</h5>
-                                <p className="text-[10px] text-gray-500">Co-Founder, LiveTheWorld</p>
-                            </div>
-                        </div>
+                    {/* Filter Tabs */}
+                    <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card border border-border">
+                        <button
+                            onClick={() => { setActiveFilter("all"); setVisibleCount(24); }}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all ${activeFilter === "all" ? "bg-cyan-500 text-black shadow-md" : "text-foreground/70 hover:text-foreground"}`}
+                        >
+                            All ({mediaItems.length})
+                        </button>
+                        <button
+                            onClick={() => { setActiveFilter("image"); setVisibleCount(24); }}
+                            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all ${activeFilter === "image" ? "bg-cyan-500 text-black shadow-md" : "text-foreground/70 hover:text-foreground"}`}
+                        >
+                            <ImageIcon size={13} />
+                            Photos ({photosCount})
+                        </button>
+                        <button
+                            onClick={() => { setActiveFilter("video"); setVisibleCount(24); }}
+                            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all ${activeFilter === "video" ? "bg-cyan-500 text-black shadow-md" : "text-foreground/70 hover:text-foreground"}`}
+                        >
+                            <Film size={13} />
+                            Videos ({videosCount})
+                        </button>
                     </div>
                 </div>
-            </section>
 
-            {/* MY PERSPECTIVE / GALLERY SECTION */}
-            <section className="relative z-10 max-w-[1650px] mx-auto px-8 md:px-20 lg:px-28 py-20 border-t border-zinc-200 dark:border-white/5">
-                <h3 className="text-2xl font-bold text-foreground tracking-tight mb-8">My perspective</h3>
+                {/* Media Grid */}
+                <div className="bg-card/40 border border-border/80 p-5 md:p-8 rounded-[36px] backdrop-blur-xl shadow-2xl">
+                    {loadingMedia ? (
+                        <div className="py-24 text-center space-y-3">
+                            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-cyan-500 border-r-transparent" />
+                            <p className="font-mono text-xs text-foreground/60">Scanning & loading perspective moments...</p>
+                        </div>
+                    ) : filteredMedia.length === 0 ? (
+                        <div className="py-20 text-center text-foreground/50 font-mono text-sm">
+                            No media found in this category.
+                        </div>
+                    ) : (
+                        <>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                                {displayedMedia.map((media, idx) => {
+                                    const isVideo = media.type === "video" || media.src.match(/\.(mp4|webm|mov|m4v)$/i);
+                                    return (
+                                        <motion.div
+                                            key={media.src + idx}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            whileInView={{ opacity: 1, scale: 1 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.4, delay: (idx % 8) * 0.05 }}
+                                            onClick={() => setLightboxIndex(idx)}
+                                            className="
+                                                group
+                                                relative
+                                                aspect-square
+                                                rounded-2xl
+                                                overflow-hidden
+                                                border
+                                                border-border
+                                                hover:border-cyan-500/50
+                                                bg-foreground/[0.03]
+                                                cursor-pointer
+                                                shadow-sm
+                                                hover:shadow-[0_0_25px_rgba(6,145,178,0.2)]
+                                                transition-all
+                                                duration-300
+                                                select-none
+                                            "
+                                        >
+                                            {isVideo ? (
+                                                <>
+                                                    <video
+                                                        src={media.src}
+                                                        autoPlay
+                                                        loop
+                                                        muted
+                                                        playsInline
+                                                        preload="metadata"
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                                                    />
+                                                    {/* Video Badge */}
+                                                    <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full bg-black/70 border border-white/20 px-2 py-0.5 font-mono text-[9px] font-bold text-white backdrop-blur-md">
+                                                        <Play size={10} className="fill-white" />
+                                                        VIDEO
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <Image
+                                                    src={media.src}
+                                                    alt={media.title || "Perspective moment"}
+                                                    fill
+                                                    loading="lazy"
+                                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                                                />
+                                            )}
 
-                <div className="bg-card p-5 rounded-[32px] overflow-hidden">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {[
-                            { src: "/about_me_imges/perspective/yezdi_me.png", alt: "Yezdi motorcycle" },
-                            { src: "/about_me_imges/perspective/IMG_6190.jpg", alt: "Memory Snapshot 1" },
-                            { src: "/about_me_imges/perspective/IMG_7295.jpg", alt: "Memory Snapshot 2" },
-                            { src: "/about_me_imges/perspective/perspective_coding.png", alt: "Coding flatlay" },
-                            { src: "/about_me_imges/perspective/perspective_travel.png", alt: "Sunset travel" },
-                            { src: "/about_me_imges/perspective/IMG_5489.jpg", alt: "Yezdi motorcycle" },
-                        ].map((img, idx) => (
-                            <div key={idx} className="group relative aspect-square rounded-2xl overflow-hidden border border-zinc-200/50 dark:border-white/5 bg-zinc-200/50 dark:bg-white/5 touch-pan-y select-none">
-                                <Image
-                                    src={img.src}
-                                    alt={img.alt}
-                                    fill
-                                    draggable={false}
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                                            {/* Hover View Overlay */}
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                                                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 border border-white/40 text-white backdrop-blur-md scale-90 group-hover:scale-100 transition-transform">
+                                                    <Maximize2 size={16} />
+                                                </span>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Load More Button */}
+                            {visibleCount < filteredMedia.length && (
+                                <div className="mt-12 text-center">
+                                    <button
+                                        onClick={() => setVisibleCount((prev) => Math.min(prev + 24, filteredMedia.length))}
+                                        className="
+                                            inline-flex
+                                            items-center
+                                            gap-2
+                                            rounded-full
+                                            border
+                                            border-cyan-500/40
+                                            bg-cyan-500/10
+                                            hover:bg-cyan-500/20
+                                            text-cyan-600
+                                            dark:text-cyan-400
+                                            font-mono
+                                            font-bold
+                                            text-xs
+                                            px-8
+                                            py-3.5
+                                            transition-all
+                                            duration-300
+                                            shadow-md
+                                            active:scale-95
+                                        "
+                                    >
+                                        <span>Load More Moments ({filteredMedia.length - visibleCount} Remaining)</span>
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+
+                {/* LIGHTBOX FULL-SCREEN MODAL */}
+                {lightboxIndex !== null && displayedMedia[lightboxIndex] && (
+                    <div 
+                        data-lenis-prevent="true"
+                        onClick={() => setLightboxIndex(null)}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-2xl"
+                    >
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setLightboxIndex(null)}
+                            className="absolute top-6 right-6 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-all"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        {/* Prev Button */}
+                        {lightboxIndex > 0 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setLightboxIndex(lightboxIndex - 1);
+                                }}
+                                className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-all"
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+                        )}
+
+                        {/* Next Button */}
+                        {lightboxIndex < displayedMedia.length - 1 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setLightboxIndex(lightboxIndex + 1);
+                                }}
+                                className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-all"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+                        )}
+
+                        {/* Media Container */}
+                        <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative max-w-5xl max-h-[85vh] w-full flex items-center justify-center overflow-hidden rounded-3xl"
+                        >
+                            {displayedMedia[lightboxIndex].type === "video" || displayedMedia[lightboxIndex].src.match(/\.(mp4|webm|mov|m4v)$/i) ? (
+                                <video
+                                    src={displayedMedia[lightboxIndex].src}
+                                    controls
+                                    autoPlay
+                                    playsInline
+                                    className="max-h-[85vh] max-w-full rounded-2xl shadow-2xl"
                                 />
-                            </div>
-                        ))}
+                            ) : (
+                                <img
+                                    src={displayedMedia[lightboxIndex].src}
+                                    alt="Perspective Lightbox"
+                                    className="max-h-[85vh] max-w-full object-contain rounded-2xl shadow-2xl"
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </section>
 
 

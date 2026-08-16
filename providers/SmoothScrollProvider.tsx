@@ -29,7 +29,17 @@ export default function SmoothScrollProvider({
 
         requestAnimationFrame(raf);
 
+        // Auto-observe body DOM changes to dynamically update scroll height
+        let resizeObserver: ResizeObserver | null = null;
+        if (typeof ResizeObserver !== "undefined") {
+            resizeObserver = new ResizeObserver(() => {
+                lenis.resize();
+            });
+            resizeObserver.observe(document.body);
+        }
+
         return () => {
+            resizeObserver?.disconnect();
             lenis.destroy();
         };
     }, []);
@@ -38,7 +48,6 @@ export default function SmoothScrollProvider({
     useEffect(() => {
         if (lenisRef.current) {
             lenisRef.current.scrollTo(0, { immediate: true });
-            // Delay resize slightly so the DOM finishes rendering before recalculating heights
             const timer = setTimeout(() => {
                 lenisRef.current?.resize();
             }, 100);

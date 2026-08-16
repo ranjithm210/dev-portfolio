@@ -21,6 +21,25 @@ import {
     Linkedin,
     Twitter,
     Instagram,
+    Sparkles,
+    Clock,
+    Flame,
+    Activity,
+    RefreshCw,
+    Server,
+    Layers,
+    Box,
+    CheckCircle2,
+    Sliders,
+    Workflow,
+    Dumbbell,
+    Compass,
+    Brain,
+    Rocket,
+    Send,
+    Loader2,
+    User,
+    ArrowRight,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
@@ -33,48 +52,132 @@ import CyberGrid from "@/components/hero/CyberGrid";
 import Footer from "@/components/layout/Footer";
 import { useTheme } from "@/providers/ThemeProvider";
 
-
-
-const projects = [
+const portfolioFeatures = [
     {
-        title: "Aether AI Platform",
-        subtitle: "Neural Networks & LLMs",
-        description: "A decentralized machine learning agent framework orchestrating autonomous AI workers for complex data analysis workflows.",
-        items: [
-            { icon: Cpu, title: "LLM Orchestration", value: "Active Agents" },
-            { icon: Terminal, title: "Query Latency", value: "85ms Avg" },
-            { icon: Database, title: "Data Ingestion", value: "4.8 TB/day" },
-        ],
+        icon: Bot,
+        title: "Streaming Generative AI Assistant",
+        tag: "Frontend + AI Service",
+        description: "Custom-engineered 'Ask Bently' AI agent featuring real-time token streaming via ReadableStream, dynamic Gemini model discovery & multi-model fallback queue, and portfolio context grounding.",
+        tech: ["Google Gemini API", "ReadableStream", "Zustand State", "Next.js App Router"],
     },
     {
-        title: "Specter DeFi Hub",
-        subtitle: "Blockchain Protocols",
-        description: "A secure multichain yield aggregator leveraging automated smart contracts for real-time portfolio optimization and liquidity mining.",
-        items: [
-            { icon: Shield, title: "Audited Smart Contract", value: "100% Secure" },
-            { icon: Zap, title: "Gas Efficiency", value: "Save 42%" },
-            { icon: Globe, title: "Connected Networks", value: "14 Chains" },
-        ],
+        icon: Box,
+        title: "Interactive 3D WebGL & Physics",
+        tag: "Creative Engineering",
+        description: "GPU-accelerated spatial visuals including a reactive 3D Cursor Bird built with React Three Fiber, dynamic Spotlight lighting shaders, Cyber Grid matrix, and floating particle fields.",
+        tech: ["Three.js", "React Three Fiber", "@react-three/drei", "GLSL Shaders"],
     },
     {
-        title: "Neon Sentinel",
-        subtitle: "Threat Intelligence & Cyber Defense",
-        description: "An advanced cloud monitoring dashboard streaming real-time security anomalies and automated attack mitigation triggers.",
-        items: [
-            { icon: Shield, title: "IDS Engine", value: "Active Monitoring" },
-            { icon: Code, title: "Alert Response Time", value: "< 2 Seconds" },
-            { icon: Database, title: "Log Index Rate", value: "250k events/s" },
-        ],
+        icon: Server,
+        title: "High-Performance Python Backend",
+        tag: "Backend Infrastructure",
+        description: "Asynchronous REST API built with Python FastAPI & Uvicorn, handling analytics ingestion, chat session telemetry, async SQLAlchemy ORM database queries, and Alembic migrations.",
+        tech: ["Python FastAPI", "SQLAlchemy 2.0 (Async)", "Alembic", "PostgreSQL / SQLite", "Docker"],
+    },
+    {
+        icon: Layers,
+        title: "Cinematic UI & Theme System",
+        tag: "UI/UX & Motion",
+        description: "Ultra-responsive dual-mode Cyberpunk Light & Dark design system with smooth CSS variable transitions, Lenis smooth inertial scrolling, and Framer Motion spring physics.",
+        tech: ["Next.js 16", "Tailwind CSS", "Framer Motion", "Lenis Scroll"],
+    },
+];
+
+const beyondCodingItems = [
+    {
+        icon: Dumbbell,
+        tag: "Iron & Discipline",
+        badgeColor: "text-amber-500 bg-amber-500/10 border-amber-500/30",
+        glowColor: "hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
+        borderColor: "hover:border-amber-500/50",
+        title: "Fitness & Heavy Iron",
+        description: "Lifting heavy, hitting PRs, dialed nutrition & biohacking routine. Treating physical conditioning like backend architecture: heavy load testing, zero downtime.",
+        metric: "Daily PRs · Pure Discipline",
+    },
+    {
+        icon: Compass,
+        tag: "Nomad Exploration",
+        badgeColor: "text-emerald-500 bg-emerald-500/10 border-emerald-500/30",
+        glowColor: "hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]",
+        borderColor: "hover:border-emerald-500/50",
+        title: "Travel & Wandering",
+        description: "Exploring remote places, scenic coastlines, mountain trails & culture. Backpack, laptop, and good coffee—recharging perspective in uncharted coordinates.",
+        metric: "New Coordinates · Nomad",
+    },
+    {
+        icon: Brain,
+        tag: "AI Whisperer",
+        badgeColor: "text-purple-500 bg-purple-500/10 border-purple-500/30",
+        glowColor: "hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]",
+        borderColor: "hover:border-purple-500/50",
+        title: "Making LLMs My Slave",
+        description: "Orchestrating autonomous multi-agent pipelines, prompt chain engineering, and bending massive neural models to do 100 hours of cognitive labour in minutes.",
+        metric: "Agent Swarms · Prompt Alchemy",
+    },
+    {
+        icon: Rocket,
+        tag: "Frontier Hacker",
+        badgeColor: "text-cyan-500 bg-cyan-500/10 border-cyan-500/30",
+        glowColor: "hover:shadow-[0_0_30px_rgba(6,145,178,0.15)]",
+        borderColor: "hover:border-cyan-400/50",
+        title: "Exploiting New Ecosystems",
+        description: "Diving headfirst into bleeding-edge frameworks, WebGL shaders, distributed tools & emerging developer APIs before they have StackOverflow answers.",
+        metric: "Zero-Day Tech · Frontier APIs",
     },
 ];
 
 export default function PortfolioPage() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [portfolioDetailsOpen, setPortfolioDetailsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+
+    // Contact Form State
+    const [contactName, setContactName] = useState("");
+    const [contactEmail, setContactEmail] = useState("");
+    const [contactMessage, setContactMessage] = useState("");
+    const [contactStatus, setContactStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+    const [contactFeedback, setContactFeedback] = useState("");
 
     const router = useRouter();
     const { toggleChat } = useChatbotStore();
     const { theme } = useTheme();
+
+    const handleContactSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setContactStatus("submitting");
+        setContactFeedback("");
+
+        try {
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: contactName,
+                    email: contactEmail,
+                    message: contactMessage,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || "Failed to send message. Please try again.");
+            }
+
+            setContactStatus("success");
+            setContactFeedback(data.message || "Message transmitted successfully! I will get back to you shortly.");
+            setContactName("");
+            setContactEmail("");
+            setContactMessage("");
+
+            setTimeout(() => {
+                setContactStatus("idle");
+            }, 6000);
+        } catch (err: any) {
+            setContactStatus("error");
+            setContactFeedback(err.message || "Failed to send message. Please try again or write directly.");
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -175,52 +278,28 @@ export default function PortfolioPage() {
                                 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)]
                             "
                         >
-                            {/* LEFT COLUMN: VISUAL CARDS */}
+                            {/* LEFT COLUMN: VISUAL CARDS (PURE NATURE & MOUNTAIN IMAGES) */}
                             <div className="flex-1 flex flex-col gap-6">
-                                {/* NIKE COLLABORATION CARD */}
-                                <div className="bg-white text-black rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between h-[215px] shadow-lg select-none">
-                                    <div>
-                                        <svg className="w-12 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M21 6.5c-2.3 1.8-6.1 4.5-9.3 6.3-2.6 1.5-5 2.5-7.2 2.9-1.2.2-2.1.1-2.5-.2-.3-.2-.3-.6 0-1.1.5-1 1.7-2.6 3.6-4.6 2-2.1 4.5-4.4 7.2-6.4 1.1-.8 2.2-1.5 3.3-2.1.3-.2.6-.2.8 0 .1.1.1.3 0 .5-1.1 1.7-2.6 3.8-4.2 5.9-1.3 1.7-2.6 3.4-3.7 4.9.9-.4 2.1-1.1 3.5-2 3.1-1.9 6.8-4.4 9.1-6.1.4-.3.8-.4.9-.2.2.2 0 .6-.3.8z" />
-                                        </svg>
-                                    </div>
-
-                                    <div className="absolute -right-4 top-2 w-[240px] h-[160px] pointer-events-none">
-                                        <Image
-                                            src="/nike_shoe.png"
-                                            alt="Nike Sneaker Collaboration"
-                                            fill
-                                            priority
-                                            draggable={false}
-                                            className="object-contain rotate-[-15deg]"
-                                        />
-                                    </div>
-
-                                    <h4 className="text-xl md:text-2xl font-black tracking-tight text-black max-w-[200px] leading-tight">
-                                        Collaborated on www.nike.in
-                                    </h4>
+                                {/* CARD 1: NATURE LANDSCAPE */}
+                                <div className="group rounded-[24px] overflow-hidden relative h-[215px] shadow-lg select-none border border-white/10 bg-black/40">
+                                    <Image
+                                        src="/about_me_imges/sidebar_images/nature_landscape.jpg"
+                                        alt="Cinematic Nature Landscape"
+                                        fill
+                                        priority
+                                        className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                    />
                                 </div>
 
-                                {/* MEDIUM LOGO CARD */}
-                                <div className="bg-gradient-to-br from-[#c83e1c] to-[#601c0c] text-white rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between h-[215px] shadow-lg select-none">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.78 12.86c-.08.43-.37.79-.78.96l-3.3 1.32a1.2 1.2 0 01-.84 0l-3.3-1.32a1.2 1.2 0 01-.78-.96V9.14c0-.43.29-.79.78-.96l3.3-1.32c.27-.11.57-.11.84 0l3.3 1.32c.49.17.78.53.78.96v5.72z" />
-                                            </svg>
-                                            <span className="font-serif font-black text-lg tracking-tight">Medium</span>
-                                        </div>
-                                        <span className="text-[10px] text-white/50 font-mono tracking-widest uppercase">@ranjith01</span>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <h4 className="text-lg md:text-xl font-bold tracking-tight leading-snug">
-                                            I Taught Myself Everything. This Is Where It Started.
-                                        </h4>
-                                        <p className="text-xs text-white/70 font-light">
-                                            I always wanted to be an archaeologist.
-                                        </p>
-                                    </div>
+                                {/* CARD 2: MOUNTAIN EXPLORATION */}
+                                <div className="group rounded-[24px] overflow-hidden relative h-[215px] shadow-lg select-none border border-white/10 bg-black/40">
+                                    <Image
+                                        src="/about_me_imges/sidebar_images/sidebar_mountain.jpg"
+                                        alt="Ranjith Mountain Exploration"
+                                        fill
+                                        priority
+                                        className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                    />
                                 </div>
                             </div>
 
@@ -368,21 +447,21 @@ export default function PortfolioPage() {
                                     className="object-contain transition-transform duration-700 hover:scale-105"
                                     priority
                                 />
-                                
+
                                 {/* Background smoke glow behind image */}
-                                <div 
+                                <div
                                     className="absolute inset-0 -z-10 blur-3xl pointer-events-none scale-150"
                                     style={{
-                                        background: theme === "dark" 
-                                            ? "radial-gradient(circle at center, rgba(255, 255, 255, 0.22), transparent 60%)" 
+                                        background: theme === "dark"
+                                            ? "radial-gradient(circle at center, rgba(255, 255, 255, 0.22), transparent 60%)"
                                             : "radial-gradient(circle at center, rgba(0, 0, 0, 0.15), transparent 70%)"
                                     }}
                                 />
                             </div>
-                            
+
                             {/* Smoke below tires/legs: dark smoke in light mode, white shade smoke in dark mode */}
-                            <div 
-                                className="absolute bottom-[16%] left-1/2 -translate-x-1/2 w-[65%] h-5 blur-md rounded-full pointer-events-none" 
+                            <div
+                                className="absolute bottom-[16%] left-1/2 -translate-x-1/2 w-[65%] h-5 blur-md rounded-full pointer-events-none"
                                 style={{
                                     backgroundColor: theme === "dark" ? "rgba(255, 255, 255, 0.55)" : "rgba(9, 9, 11, 0.6)",
                                     mixBlendMode: theme === "dark" ? "normal" : "multiply" as any
@@ -539,38 +618,68 @@ export default function PortfolioPage() {
                     </motion.div>
                 </div>
 
-                <div className="mt-12 text-center">
+                {/* ULTRA ATTRACTIVE GLOWING CTA BUTTON */}
+                <div className="mt-16 flex justify-center">
                     <motion.button
                         onClick={() => router.push("/about")}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.96 }}
                         className="
+                            group
+                            relative
                             inline-flex
                             items-center
-                            gap-2
+                            justify-center
+                            p-[1.5px]
                             rounded-full
-                            border
-                            border-white/10
-                            bg-white/5
-                            px-6
-                            py-3
-                            text-sm
-                            font-medium
-                            text-zinc-500 dark:text-zinc-400
-                            backdrop-blur-xl
+                            overflow-hidden
+                            shadow-[0_0_30px_rgba(6,145,178,0.25)]
+                            hover:shadow-[0_0_50px_rgba(34,211,238,0.55)]
                             transition-all
-                            duration-300
-                            hover:border-zinc-500/30
-                            hover:bg-zinc-500/10
+                            duration-500
                         "
                     >
-                        View More About Me
+                        {/* Animated Glowing Gradient Border */}
+                        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 opacity-75 group-hover:opacity-100 animate-pulse group-hover:animate-none transition-opacity duration-500" />
+                        
+                        {/* Inner Frosted Glass Pill */}
+                        <span className="
+                            relative
+                            flex
+                            items-center
+                            gap-3.5
+                            rounded-full
+                            bg-card/90
+                            dark:bg-black/85
+                            px-8
+                            py-4
+                            backdrop-blur-2xl
+                            transition-all
+                            duration-300
+                            group-hover:bg-card/75
+                            dark:group-hover:bg-black/70
+                        ">
+                            {/* Glowing Icon Avatar */}
+                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shadow-[0_0_12px_rgba(34,211,238,0.3)]">
+                                <Sparkles size={15} />
+                            </span>
+
+                            {/* Text */}
+                            <span className="text-xs md:text-sm font-black tracking-wider text-foreground group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors uppercase font-mono">
+                                Explore My Full Journey & Story
+                            </span>
+
+                            {/* Sliding Arrow Pill */}
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/70 group-hover:text-cyan-500 group-hover:bg-cyan-500/15 group-hover:translate-x-1.5 transition-all duration-300">
+                                <ArrowRight size={14} />
+                            </span>
+                        </span>
                     </motion.button>
                 </div>
 
             </section>
 
-            {/* PROJECTS SECTION */}
+            {/* PROJECTS & ARCHITECTURE SECTION */}
             <section
                 id="projects"
                 className="
@@ -579,84 +688,277 @@ export default function PortfolioPage() {
                     mx-auto
                     max-w-7xl
                     px-6
-                    py-20
+                    py-24
                 "
             >
-                <div className="mb-16">
-                    <p
-                        className="
-                            text-sm
-                            uppercase
-                            tracking-[0.3em]
-                            text-zinc-500 dark:text-zinc-400
-                        "
-                    >
-                        Portfolio Showcase
+                {/* SECTION HEADER */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+                    <div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-cyan-500 dark:text-cyan-400 mb-4 backdrop-blur-md shadow-[0_0_15px_rgba(6,145,178,0.15)]">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            Live Engineering & Upcoming Releases
+                        </div>
+
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground">
+                            PROJECT's
+                        </h2>
+                    </div>
+
+                    <p className="text-sm text-foreground/60 max-w-md leading-relaxed">
+                        Explore the end-to-end architecture powering this portfolio ecosystem, alongside next-generation autonomous systems in development.
                     </p>
-
-                    <h2
-                        className="
-                            mt-4
-                            text-4xl
-                            font-black
-                            md:text-6xl
-                        "
-                    >
-                        Featured Cyber Projects
-                    </h2>
                 </div>
 
-                <div
-                    className="
-                        grid
-                        grid-cols-1
-                        gap-8
-                        md:grid-cols-2
-                        lg:grid-cols-3
-                    "
-                >
-                    {projects.map((project, index) => (
-                        <CyberPanel
-                            key={index}
-                            title={project.title}
-                            subtitle={project.subtitle}
-                            description={project.description}
-                            items={project.items}
-                        />
-                    ))}
-                </div>
-
-                <div className="mt-12 text-center">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                {/* 2-COLUMN COMPACT CARDS GRID */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    {/* CARD 1: THIS PORTFOLIO (FEATURED FLAGSHIP PROJECT) */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 25 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
                         className="
-                            inline-flex
-                            items-center
-                            gap-2
-                            rounded-full
+                            group
+                            relative
+                            flex
+                            flex-col
+                            justify-between
+                            rounded-[28px]
                             border
-                            border-white/10
-                            bg-white/5
-                            px-6
-                            py-3
-                            text-sm
-                            font-medium
-                            text-zinc-500 dark:text-zinc-400
+                            border-cyan-500/40
+                            dark:border-cyan-400/30
+                            bg-card/70
+                            p-7
                             backdrop-blur-xl
                             transition-all
-                            duration-300
-                            hover:border-zinc-500/30
-                            hover:bg-zinc-500/10
+                            duration-500
+                            shadow-[0_0_35px_rgba(6,145,178,0.12)]
+                            dark:shadow-[0_0_40px_rgba(34,211,238,0.1)]
+                            hover:-translate-y-1.5
+                            hover:border-cyan-400
                         "
                     >
-                        View More Projects
-                    </motion.button>
+                        <div>
+                            {/* Card Top Badge Row */}
+                            <div className="flex items-center justify-between mb-5">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 group-hover:scale-105 transition-transform shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                                        <Bot size={22} />
+                                    </div>
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold tracking-widest text-foreground/40 uppercase">
+                                            FLG-01 // PRODUCTION
+                                        </span>
+                                        <h4 className="text-xs font-bold text-cyan-600 dark:text-cyan-400">
+                                            Fullstack AI Ecosystem
+                                        </h4>
+                                    </div>
+                                </div>
+
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    Live
+                                </span>
+                            </div>
+
+                            {/* Title & Description */}
+                            <h3 className="text-xl md:text-2xl font-black text-foreground mb-3 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                                Ranjith.dev Ecosystem
+                            </h3>
+                            <p className="text-xs md:text-sm text-foreground/70 leading-relaxed mb-6">
+                                A production-grade web platform engineered from scratch. Features streaming Google Gemini AI assistant ("Ask Bently"), 3D WebGL physics, and an asynchronous Python FastAPI backend.
+                            </p>
+
+                            {/* Mini Telemetry Chips */}
+                            <div className="grid grid-cols-3 gap-2 mb-6 p-3 rounded-xl bg-foreground/[0.03] border border-border text-center font-mono text-[10px]">
+                                <div>
+                                    <span className="block font-bold text-cyan-600 dark:text-cyan-400">100%</span>
+                                    <span className="text-foreground/50 text-[9px]">TypeScript</span>
+                                </div>
+                                <div className="border-x border-border">
+                                    <span className="block font-bold text-emerald-600 dark:text-emerald-400">&lt;60ms</span>
+                                    <span className="text-foreground/50 text-[9px]">First Token</span>
+                                </div>
+                                <div>
+                                    <span className="block font-bold text-purple-600 dark:text-purple-400">Async</span>
+                                    <span className="text-foreground/50 text-[9px]">FastAPI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            {/* Tech Stack Tags */}
+                            <div className="flex flex-wrap gap-1.5 pt-3 mb-5 border-t border-border">
+                                {["Next.js 16", "Python FastAPI", "Three.js", "Gemini AI", "SQLAlchemy", "Tailwind CSS"].map((tech, tIdx) => (
+                                    <span
+                                        key={tIdx}
+                                        className="rounded-lg bg-foreground/[0.04] border border-border px-2.5 py-1 text-[10px] font-mono text-foreground/75 font-medium"
+                                    >
+                                        {tech}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {/* Show More Button (Opens Popup) */}
+                            <button
+                                onClick={() => setPortfolioDetailsOpen(true)}
+                                className="
+                                    w-full
+                                    flex
+                                    items-center
+                                    justify-center
+                                    gap-2.5
+                                    rounded-2xl
+                                    bg-cyan-500
+                                    hover:bg-cyan-400
+                                    text-black
+                                    font-bold
+                                    text-xs
+                                    py-3
+                                    px-5
+                                    transition-all
+                                    duration-300
+                                    shadow-[0_0_20px_rgba(34,211,238,0.25)]
+                                    hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]
+                                    active:scale-95
+                                "
+                            >
+                                <Sparkles size={14} />
+                                <span>Show More & Architecture</span>
+                                <ArrowUpRight size={15} />
+                            </button>
+                        </div>
+                    </motion.div>
+
+                    {/* CARD 2: SOMETHING BIG IS COOKING (COMING SOON) */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 25 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.15 }}
+                        className="
+                            group
+                            relative
+                            flex
+                            flex-col
+                            justify-between
+                            rounded-[28px]
+                            border
+                            border-amber-500/30
+                            dark:border-amber-400/20
+                            hover:border-amber-500/50
+                            dark:hover:border-amber-400/40
+                            bg-card/70
+                            p-7
+                            backdrop-blur-xl
+                            transition-all
+                            duration-500
+                            shadow-[0_0_35px_rgba(245,158,11,0.08)]
+                            dark:shadow-[0_0_40px_rgba(251,191,36,0.06)]
+                            hover:-translate-y-1.5
+                        "
+                    >
+                        <div>
+                            {/* Card Top Badge Row */}
+                            <div className="flex items-center justify-between mb-5">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/30 group-hover:scale-105 transition-transform shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                                        <Flame size={22} className="animate-pulse text-orange-500 dark:text-amber-400" />
+                                    </div>
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold tracking-widest text-foreground/40 uppercase">
+                                            LAB-02 // FORGING
+                                        </span>
+                                        <h4 className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                                            Next-Gen Classified Release
+                                        </h4>
+                                    </div>
+                                </div>
+
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                    Cooking in Lab
+                                </span>
+                            </div>
+
+                            {/* Title & Description */}
+                            <h3 className="text-xl md:text-2xl font-black text-foreground mb-3 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors">
+                                Something Big is Cooking...
+                            </h3>
+                            <p className="text-xs md:text-sm text-foreground/70 leading-relaxed mb-6">
+                                A massive new autonomous system and high-performance distributed architecture is currently in the oven. Heavy benchmarking, low-latency pipelines, and next-level interfaces are being forged.
+                            </p>
+
+                            {/* Progress & Status Box */}
+                            <div className="mb-6 p-4 rounded-xl bg-foreground/[0.03] border border-border space-y-2">
+                                <div className="flex items-center justify-between font-mono text-[11px]">
+                                    <span className="text-foreground/60">Forging & Benchmarking Architecture</span>
+                                    <span className="font-bold text-amber-600 dark:text-amber-400">96%</span>
+                                </div>
+                                <div className="h-2 w-full rounded-full bg-foreground/10 overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: "96%" }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 1.2, delay: 0.3 }}
+                                        className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            {/* Tech Stack Tags */}
+                            <div className="flex flex-wrap gap-1.5 pt-3 mb-5 border-t border-border">
+                                {["Autonomous AI Agents", "Distributed Compute", "Ultra-Low Latency", "Next-Gen UI", "Classified"].map((tech, tIdx) => (
+                                    <span
+                                        key={tIdx}
+                                        className="rounded-lg bg-foreground/[0.04] border border-border px-2.5 py-1 text-[10px] font-mono text-foreground/75 font-medium"
+                                    >
+                                        {tech}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {/* Coming Soon Teaser Button */}
+                            <div
+                                className="
+                                    w-full
+                                    flex
+                                    items-center
+                                    justify-center
+                                    gap-2.5
+                                    rounded-2xl
+                                    border
+                                    border-amber-500/30
+                                    bg-amber-500/10
+                                    text-amber-600
+                                    dark:text-amber-400
+                                    font-bold
+                                    text-xs
+                                    py-3
+                                    px-5
+                                    font-mono
+                                    tracking-wider
+                                    uppercase
+                                    cursor-default
+                                    shadow-[0_0_15px_rgba(245,158,11,0.1)]
+                                "
+                            >
+                                <Clock size={14} className="animate-spin text-amber-500" style={{ animationDuration: "6s" }} />
+                                <span>Something Big Coming Soon</span>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
 
-            {/* HOBBIES SECTION */}
+            {/* HOBBIES & BEYOND CODING SECTION */}
             <section
                 className="
                     relative
@@ -664,86 +966,86 @@ export default function PortfolioPage() {
                     mx-auto
                     max-w-7xl
                     px-6
-                    py-32
+                    py-28
                 "
             >
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: 40,
-                    }}
-                    whileInView={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        duration: 1,
-                    }}
-                    className="
-                        rounded-[40px]
-                        border
-                        border-white/10
-                        bg-white/5
-                        p-12
-                        backdrop-blur-2xl
-                    "
-                >
-                    <p
-                        className="
-                            text-sm
-                            uppercase
-                            tracking-[0.3em]
-                            text-cyan-400
-                        "
-                    >
-                        Hobbies & Passion
-                    </p>
+                {/* Section Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+                    <div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-cyan-500 dark:text-cyan-400 mb-4 backdrop-blur-md shadow-[0_0_15px_rgba(6,145,178,0.15)]">
+                            <Sparkles size={13} />
+                            Hobbies, Passions & Mindset
+                        </div>
 
-                    <h2
-                        className="
-                            mt-4
-                            text-4xl
-                            font-black
-                            md:text-6xl
-                        "
-                    >
-                        Beyond Coding
-                    </h2>
-
-                    <div
-                        className="
-                            mt-12
-                            grid
-                            gap-6
-                            md:grid-cols-2
-                            lg:grid-cols-4
-                        "
-                    >
-                        {[
-                            "AI Exploration",
-                            "Cinematic UI Design",
-                            "Futuristic Interfaces",
-                            "Creative Storytelling",
-                        ].map((item) => (
-                            <div
-                                key={item}
-                                className="
-                                    rounded-3xl
-                                    border
-                                    border-cyan-400/20
-                                    bg-black/40
-                                    p-8
-                                    text-center
-                                    text-lg
-                                    font-semibold
-                                    text-white
-                                "
-                            >
-                                {item}
-                            </div>
-                        ))}
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground">
+                            Beyond Coding
+                        </h2>
                     </div>
-                </motion.div>
+
+                    <p className="text-sm text-foreground/60 max-w-md leading-relaxed">
+                        What drives the human behind the terminal: physical iron discipline, global exploration, bending AI systems, and conquering frontier tech.
+                    </p>
+                </div>
+
+                {/* 4 Rich Dynamic Passion Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {beyondCodingItems.map((item, idx) => {
+                        const IconComponent = item.icon;
+                        return (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                className={`
+                                    group
+                                    relative
+                                    flex
+                                    flex-col
+                                    justify-between
+                                    rounded-[28px]
+                                    border
+                                    border-border
+                                    ${item.borderColor}
+                                    bg-card/60
+                                    p-6
+                                    backdrop-blur-xl
+                                    transition-all
+                                    duration-500
+                                    ${item.glowColor}
+                                    hover:-translate-y-2
+                                `}
+                            >
+                                <div>
+                                    {/* Top Icon & Badge */}
+                                    <div className="flex items-center justify-between mb-5">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground/[0.04] border border-border group-hover:scale-110 transition-transform shadow-sm">
+                                            <IconComponent size={24} className="text-foreground group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors" />
+                                        </div>
+                                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${item.badgeColor}`}>
+                                            {item.tag}
+                                        </span>
+                                    </div>
+
+                                    {/* Title & Description */}
+                                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-xs text-foreground/70 leading-relaxed mb-6">
+                                        {item.description}
+                                    </p>
+                                </div>
+
+                                {/* Metric Chip */}
+                                <div className="pt-3 border-t border-border/70 flex items-center justify-between text-[11px] font-mono text-foreground/60">
+                                    <span className="font-semibold text-foreground/80">{item.metric}</span>
+                                    <span className="text-foreground/30">#0{idx + 1}</span>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
             </section>
 
 
@@ -755,7 +1057,7 @@ export default function PortfolioPage() {
                     <div className="space-y-8">
                         <div>
                             <h3 className="text-xl md:text-3xl font-black text-lime-600 dark:text-[#d4ff00] leading-none tracking-tight">
-                                ranjith@gmail.com <span className="text-foreground/30 font-light">//</span> +91 98765 43210
+                                ranjith@gmail.com
                             </h3>
                         </div>
 
@@ -789,38 +1091,125 @@ export default function PortfolioPage() {
                         </div>
                     </div>
 
-                    {/* Right Column (Form) */}
-                    <div className="w-full space-y-6">
+                    {/* Right Column (Interactive Fullstack Contact Form) */}
+                    <form onSubmit={handleContactSubmit} className="w-full space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold block">First Name</label>
                                 <input
                                     type="text"
+                                    required
+                                    value={contactName}
+                                    onChange={(e) => setContactName(e.target.value)}
+                                    disabled={contactStatus === "submitting"}
                                     placeholder="Enter your name"
-                                    className="w-full bg-transparent border-b border-border focus:border-lime-500 dark:focus:border-[#d4ff00] py-3 text-sm focus:outline-none transition-colors duration-300 placeholder-foreground/20 text-foreground"
+                                    className="w-full bg-transparent border-b border-border focus:border-lime-500 dark:focus:border-[#d4ff00] py-3 text-sm focus:outline-none transition-colors duration-300 placeholder-foreground/20 text-foreground disabled:opacity-50"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold block">Email Address</label>
                                 <input
                                     type="email"
+                                    required
+                                    value={contactEmail}
+                                    onChange={(e) => setContactEmail(e.target.value)}
+                                    disabled={contactStatus === "submitting"}
                                     placeholder="Enter your email"
-                                    className="w-full bg-transparent border-b border-border focus:border-lime-500 dark:focus:border-[#d4ff00] py-3 text-sm focus:outline-none transition-colors duration-300 placeholder-foreground/20 text-foreground"
+                                    className="w-full bg-transparent border-b border-border focus:border-lime-500 dark:focus:border-[#d4ff00] py-3 text-sm focus:outline-none transition-colors duration-300 placeholder-foreground/20 text-foreground disabled:opacity-50"
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold block">Message</label>
                             <textarea
-                                placeholder="Enter your message"
+                                required
                                 rows={4}
-                                className="w-full bg-transparent border-b border-border focus:border-lime-500 dark:focus:border-[#d4ff00] py-3 text-sm focus:outline-none transition-colors duration-300 placeholder-foreground/20 text-foreground resize-none"
+                                value={contactMessage}
+                                onChange={(e) => setContactMessage(e.target.value)}
+                                disabled={contactStatus === "submitting"}
+                                placeholder="Enter your message..."
+                                className="w-full bg-transparent border-b border-border focus:border-lime-500 dark:focus:border-[#d4ff00] py-3 text-sm focus:outline-none transition-colors duration-300 placeholder-foreground/20 text-foreground resize-none disabled:opacity-50"
                             />
                         </div>
-                        <button className="w-full bg-lime-500 hover:bg-lime-600 dark:bg-[#d4ff00] dark:hover:bg-[#c9f200] text-white dark:text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all duration-300 shadow-lg hover:scale-[1.01] active:scale-95">
-                            submit message
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={contactStatus === "submitting"}
+                            className="
+                                w-full
+                                flex
+                                items-center
+                                justify-center
+                                gap-2.5
+                                bg-lime-500
+                                hover:bg-lime-600
+                                dark:bg-[#d4ff00]
+                                dark:hover:bg-[#c9f200]
+                                text-white
+                                dark:text-black
+                                font-black
+                                uppercase
+                                text-xs
+                                tracking-widest
+                                py-4
+                                rounded-xl
+                                transition-all
+                                duration-300
+                                shadow-lg
+                                hover:scale-[1.01]
+                                active:scale-95
+                                disabled:opacity-60
+                                disabled:cursor-not-allowed
+                            "
+                        >
+                            {contactStatus === "submitting" ? (
+                                <>
+                                    <Loader2 size={15} className="animate-spin" />
+                                    <span>Transmitting Message...</span>
+                                </>
+                            ) : contactStatus === "success" ? (
+                                <>
+                                    <CheckCircle2 size={15} className="text-emerald-900 dark:text-emerald-950" />
+                                    <span>Message Transmitted!</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Send size={14} />
+                                    <span>Submit Message</span>
+                                </>
+                            )}
                         </button>
-                    </div>
+
+                        {/* Success Feedback Banner */}
+                        {contactStatus === "success" && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono flex items-center gap-2.5 shadow-sm"
+                            >
+                                <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
+                                <span>{contactFeedback}</span>
+                            </motion.div>
+                        )}
+
+                        {/* Error Feedback Banner */}
+                        {contactStatus === "error" && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-mono flex items-center justify-between gap-2 shadow-sm"
+                            >
+                                <span>{contactFeedback}</span>
+                                <a
+                                    href={`mailto:ranjith@gmail.com?subject=${encodeURIComponent(`Inquiry from ${contactName || "Visitor"}`)}&body=${encodeURIComponent(contactMessage)}`}
+                                    className="underline font-bold text-rose-500"
+                                >
+                                    Email directly
+                                </a>
+                            </motion.div>
+                        )}
+                    </form>
                 </div>
 
                 {/* Footer Bottom Bar */}
@@ -861,6 +1250,187 @@ export default function PortfolioPage() {
                     RANJI
                 </h2>
             </div>
+
+            {/* ========================================================================= */}
+            {/* POPUP MODAL: FULL PORTFOLIO ARCHITECTURE DEEP-DIVE (ROOT LEVEL OVERLAY)   */}
+            {/* ========================================================================= */}
+            <AnimatePresence>
+                {portfolioDetailsOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-8">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setPortfolioDetailsOpen(false)}
+                            className="absolute inset-0 bg-black/85 backdrop-blur-xl"
+                        />
+
+                        {/* Modal Content Box */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.93, y: 30 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.93, y: 30 }}
+                            transition={{ type: "spring", duration: 0.5 }}
+                            data-lenis-prevent="true"
+                            className="
+                                relative
+                                z-10
+                                w-full
+                                max-w-4xl
+                                h-[85vh]
+                                max-h-[780px]
+                                flex
+                                flex-col
+                                rounded-[32px]
+                                border
+                                border-cyan-500/40
+                                dark:border-cyan-400/30
+                                bg-card
+                                text-foreground
+                                shadow-[0_0_80px_rgba(6,145,178,0.35)]
+                                backdrop-blur-2xl
+                                overflow-hidden
+                            "
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between border-b border-border p-6 shrink-0 bg-cyan-950/20">
+                                <div className="flex items-center gap-3">
+                                    <span className="flex h-2.5 w-2.5 relative">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                                    </span>
+                                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                        LIVE PRODUCTION ARCHITECTURE · CASE STUDY
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setPortfolioDetailsOpen(false)}
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-all"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Modal Scrollable Body */}
+                            <div 
+                                data-lenis-prevent="true"
+                                className="
+                                    flex-1
+                                    min-h-0
+                                    overflow-y-auto
+                                    overscroll-contain
+                                    touch-pan-y
+                                    p-6
+                                    md:p-8
+                                    space-y-8
+                                    [scrollbar-width:thin]
+                                    [scrollbar-color:rgba(34,211,238,0.25)_transparent]
+                                "
+                            >
+                                <div>
+                                    <h3 className="text-2xl md:text-3xl font-black text-foreground mb-2">
+                                        Ranjith.dev — Fullstack AI Web Ecosystem
+                                    </h3>
+                                    <p className="text-xs md:text-sm text-foreground/70 leading-relaxed">
+                                        A production-grade fullstack web application engineered from scratch. Features real-time streaming Generative AI, GPU-accelerated 3D WebGL physics, Lenis inertial motion systems, and an asynchronous Python FastAPI backend with async database telemetry.
+                                    </p>
+                                </div>
+
+                                {/* Telemetry Metrics Bar */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-foreground/[0.02] border border-border text-center">
+                                    <div className="p-2">
+                                        <span className="block text-xl font-black text-cyan-600 dark:text-cyan-400 font-mono">100%</span>
+                                        <span className="text-[10px] uppercase font-bold tracking-wider text-foreground/50">TypeScript Safety</span>
+                                    </div>
+                                    <div className="p-2 border-l border-border">
+                                        <span className="block text-xl font-black text-emerald-600 dark:text-emerald-400 font-mono">&lt; 60ms</span>
+                                        <span className="text-[10px] uppercase font-bold tracking-wider text-foreground/50">AI First Token</span>
+                                    </div>
+                                    <div className="p-2 border-l border-border">
+                                        <span className="block text-xl font-black text-cyan-600 dark:text-cyan-400 font-mono">60+ FPS</span>
+                                        <span className="text-[10px] uppercase font-bold tracking-wider text-foreground/50">3D WebGL Canvas</span>
+                                    </div>
+                                    <div className="p-2 border-l border-border">
+                                        <span className="block text-xl font-black text-purple-600 dark:text-purple-400 font-mono">Async</span>
+                                        <span className="text-[10px] uppercase font-bold tracking-wider text-foreground/50">FastAPI Engine</span>
+                                    </div>
+                                </div>
+
+                                {/* Detailed 4 Feature Cards */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {portfolioFeatures.map((feat, fIdx) => {
+                                        const FeatIcon = feat.icon;
+                                        return (
+                                            <div
+                                                key={fIdx}
+                                                className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur-md"
+                                            >
+                                                <div className="flex items-center gap-3 mb-2.5">
+                                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                                                        <FeatIcon size={18} />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400">
+                                                            {feat.tag}
+                                                        </span>
+                                                        <h4 className="text-xs font-bold text-foreground">
+                                                            {feat.title}
+                                                        </h4>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-xs text-foreground/70 leading-relaxed mb-3">
+                                                    {feat.description}
+                                                </p>
+
+                                                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/60">
+                                                    {feat.tech.map((t, tIdx) => (
+                                                        <span
+                                                            key={tIdx}
+                                                            className="rounded-md bg-foreground/[0.04] border border-border px-2 py-0.5 font-mono text-[9px] text-foreground/80 font-medium"
+                                                        >
+                                                            {t}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border p-5 shrink-0 bg-cyan-950/20">
+                                <p className="text-xs text-foreground/60 text-center sm:text-left">
+                                    Interactive fullstack architecture running live.
+                                </p>
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <button
+                                        onClick={() => {
+                                            setPortfolioDetailsOpen(false);
+                                            toggleChat();
+                                        }}
+                                        className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs px-5 py-2.5 transition-all shadow-[0_0_15px_rgba(34,211,238,0.3)] active:scale-95"
+                                    >
+                                        <Bot size={14} />
+                                        <span>Ask AI Assistant</span>
+                                    </button>
+                                    <a
+                                        href="https://github.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card/50 hover:bg-card text-foreground text-xs font-semibold px-4 py-2.5 transition-all hover:border-cyan-500/40"
+                                    >
+                                        <Github size={14} />
+                                        <span>GitHub</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             <AIChatbot />
         </main>

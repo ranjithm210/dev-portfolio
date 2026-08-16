@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# backups & files exceeding GitHub 100MB limit
+public/about_me_imges/sidebar_images_backup/
+public/about_me_imges/perspective/video-output-2C99CEAA-5E77-470E-B71B-D2F40B35F96D.mov
