@@ -87,6 +87,8 @@ async function getAvailableModels(apiKey: string): Promise<string[]> {
         "gemini-pro-latest",
         "gemini-2.5-flash-lite",
     ];
+}
+
 export async function POST(req: Request) {
     try {
         const { message } = await req.json();
