@@ -526,7 +526,7 @@ export default function AboutPage() {
                 <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-500 font-medium">Follow me on</span>
                     <a
-                        href="https://instagram.com"
+                        href="https://www.instagram.com/rxnji.__?igsh=MTVtdmFuYzU3azJlNg=="
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 border border-zinc-200 dark:border-white/10 hover:border-zinc-300 dark:hover:border-white/20 transition-all px-3 py-1.5 rounded-full text-xs font-semibold text-foreground"
@@ -544,9 +544,9 @@ export default function AboutPage() {
                         the Ranjith
                     </h2>
                     <div className="flex justify-center gap-6 pt-2">
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-foreground transition-colors"><Linkedin size={18} /></a>
-                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-foreground transition-colors"><Github size={18} /></a>
-                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-foreground transition-colors"><Twitter size={18} /></a>
+                        <a href="https://www.linkedin.com/in/ranjith-m-dev/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-gray-500 hover:text-foreground transition-colors"><Linkedin size={18} /></a>
+                        <a href="https://github.com/ranjithm210" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-gray-500 hover:text-foreground transition-colors"><Github size={18} /></a>
+                        <a href="https://x.com/Raxjib" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" className="text-gray-500 hover:text-foreground transition-colors"><Twitter size={18} /></a>
                     </div>
                 </div>
 

@@ -1057,7 +1057,7 @@ export default function PortfolioPage() {
                     <div className="space-y-8">
                         <div>
                             <h3 className="text-xl md:text-3xl font-black text-lime-600 dark:text-[#d4ff00] leading-none tracking-tight">
-                                ranjith@gmail.com
+                                ranjithranji838683@gmail.com
                             </h3>
                         </div>
 
@@ -1078,11 +1078,19 @@ export default function PortfolioPage() {
                                 </div>
                                 <div className="flex gap-2 justify-center sm:justify-start">
                                     {[
-                                        { Icon: Globe, href: "#" },
-                                        { Icon: Github, href: "#" },
-                                        { Icon: Linkedin, href: "#" }
-                                    ].map(({ Icon, href }, i) => (
-                                        <a key={i} href={href} className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-foreground hover:text-background transition-all duration-300">
+                                        { Icon: Github, href: "https://github.com/ranjithm210", label: "GitHub" },
+                                        { Icon: Linkedin, href: "https://www.linkedin.com/in/ranjith-m-dev/", label: "LinkedIn" },
+                                        { Icon: Twitter, href: "https://x.com/Raxjib", label: "Twitter / X" },
+                                        { Icon: Instagram, href: "https://www.instagram.com/rxnji.__?igsh=MTVtdmFuYzU3azJlNg==", label: "Instagram" }
+                                    ].map(({ Icon, href, label }, i) => (
+                                        <a
+                                            key={i}
+                                            href={href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label={label}
+                                            className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-foreground hover:text-background transition-all duration-300"
+                                        >
                                             <Icon size={14} />
                                         </a>
                                     ))}
@@ -1202,7 +1210,7 @@ export default function PortfolioPage() {
                             >
                                 <span>{contactFeedback}</span>
                                 <a
-                                    href={`mailto:ranjith@gmail.com?subject=${encodeURIComponent(`Inquiry from ${contactName || "Visitor"}`)}&body=${encodeURIComponent(contactMessage)}`}
+                                    href={`mailto:ranjithranji838683@gmail.com?subject=${encodeURIComponent(`Inquiry from ${contactName || "Visitor"}`)}&body=${encodeURIComponent(contactMessage)}`}
                                     className="underline font-bold text-rose-500"
                                 >
                                     Email directly
@@ -1217,8 +1225,13 @@ export default function PortfolioPage() {
                     <div className="space-y-2 text-center md:text-left">
                         <h5 className="font-bold uppercase tracking-wider text-foreground">Quick Links</h5>
                         <p className="space-x-4">
-                            {["Home", "About Me", "Portfolio", "Service", "Contact"].map((link, i) => (
-                                <a key={i} href="#" className="hover:text-foreground transition-colors duration-200">{link}</a>
+                            {[
+                                { name: "Home", href: "/" },
+                                { name: "About Me", href: "/about" },
+                                { name: "Portfolio", href: "/portfolio" },
+                                { name: "Contact", href: "#contact" },
+                            ].map((item, i) => (
+                                <a key={i} href={item.href} className="hover:text-foreground transition-colors duration-200">{item.name}</a>
                             ))}
                         </p>
                     </div>
@@ -1417,7 +1430,7 @@ export default function PortfolioPage() {
                                         <span>Ask AI Assistant</span>
                                     </button>
                                     <a
-                                        href="https://github.com"
+                                        href="https://github.com/ranjithm210"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card/50 hover:bg-card text-foreground text-xs font-semibold px-4 py-2.5 transition-all hover:border-cyan-500/40"

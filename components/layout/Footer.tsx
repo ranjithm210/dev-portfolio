@@ -22,34 +22,38 @@ export default function Footer() {
 
             <div className="flex items-center gap-6 my-2">
                 <a
-                    href="#"
+                    href="https://github.com/ranjithm210"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-cyan-400 transition-all duration-300 hover:scale-110"
+                    aria-label="GitHub"
                 >
                     <Github size={20} />
                 </a>
                 <a
-                    href="#"
+                    href="https://www.linkedin.com/in/ranjith-m-dev/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-cyan-400 transition-all duration-300 hover:scale-110"
+                    aria-label="LinkedIn"
                 >
                     <Linkedin size={20} />
                 </a>
                 <a
-                    href="#"
+                    href="https://x.com/Raxjib"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-cyan-400 transition-all duration-300 hover:scale-110"
+                    aria-label="Twitter / X"
                 >
                     <Twitter size={20} />
                 </a>
                 <a
-                    href="#"
+                    href="https://www.instagram.com/rxnji.__?igsh=MTVtdmFuYzU3azJlNg=="
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-cyan-400 transition-all duration-300 hover:scale-110"
+                    aria-label="Instagram"
                 >
                     <Instagram size={20} />
                 </a>
