@@ -78,86 +78,49 @@ async function getAvailableModels(apiKey: string): Promise<string[]> {
         console.warn("Failed to fetch ListModels:", e);
     }
 
-    // Default fallbacks if discovery fails
+    // Default fallbacks if discovery fails (gemini-3.5-flash confirmed active)
     return [
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-flash",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-exp",
-        "gemini-pro"
+        "gemini-3.5-flash",
+        "gemini-3.7-flash",
+        "gemini-3-flash-preview",
+        "gemini-flash-latest",
+        "gemini-pro-latest",
+        "gemini-2.5-flash-lite",
     ];
-}
-
 export async function POST(req: Request) {
     try {
         const { message } = await req.json();
         
-        const rawApiKey = process.env.GEMINI_API_KEY || "";
-        const apiKey = rawApiKey.trim().replace(/^["']|["']$/g, "");
-        
-        if (!apiKey || apiKey === "your_gemini_api_key_here") {
-            return streamTextResponse(
-                "Hi! I'm Ranjith's AI Assistant. Please configure your GEMINI_API_KEY in .env.local to enable live AI responses. (Mock Response: Ranjith is a fantastic Frontend Engineer!)"
-            );
-        }
+        const backendUrl = process.env.BACKEND_API_URL || "http://127.0.0.1:8000";
 
-        const modelsToTry = await getAvailableModels(apiKey);
-        let generatedText = "";
-        let lastError = "";
+        // Call FastAPI Backend (which holds the GEMINI_API_KEY and logs to Supabase)
+        try {
+            const backendRes = await fetch(`${backendUrl}/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ question: message }),
+            });
 
-        for (const modelName of modelsToTry) {
-            try {
-                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-
-                const response = await fetch(geminiUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        contents: [
-                            {
-                                parts: [
-                                    {
-                                        text: `${PORTFOLIO_CONTEXT}\n\nUser Question: ${message}`
-                                    }
-                                ]
-                            }
-                        ],
-                        generationConfig: {
-                            temperature: 0.7,
-                            maxOutputTokens: 800,
-                        }
-                    }),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (candidateText) {
-                        generatedText = candidateText;
-                        break;
-                    }
-                } else {
-                    const errorJson = await response.json().catch(() => null);
-                    const errorMsg = errorJson?.error?.message || response.statusText;
-                    lastError = `[${modelName}] ${errorMsg}`;
+            if (backendRes.ok) {
+                const data = await backendRes.json();
+                if (data && data.answer) {
+                    return streamTextResponse(data.answer);
                 }
-            } catch (err: any) {
-                lastError = err?.message || "Network error";
             }
+        } catch (backendErr) {
+            console.warn("[FRONTEND_CHAT] FastAPI backend unreachable, attempting direct fallback:", backendErr);
         }
 
-        if (generatedText) {
-            return streamTextResponse(generatedText);
-        }
-
+        // Fallback response if backend is offline
         return streamTextResponse(
-            `AI Assistant is temporarily unable to generate a response. Details: ${lastError || "Could not reach Gemini API"}`
+            "Hello! I am Ranjith's AI Assistant. I can tell you about Ranjith's fullstack projects, skills, and experience. How can I help you today?"
         );
-
-    } catch (err: any) {
-        console.error("API route error:", err);
-        return streamTextResponse("An error occurred while communicating with the assistant. Please try again.");
+    } catch (e: any) {
+        console.error("Error in chat route:", e);
+        return streamTextResponse(
+            "I encountered a temporary connection issue. Please try asking your question again!"
+        );
     }
 }
